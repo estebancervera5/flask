@@ -61,7 +61,20 @@ def login():
     else:
         return jsonify({"msg": "Credenciales Incorrectas"})
     
+#Endpoint Protegido
+@app.route('/datos', methods=['POST'])
+@jwt_required()
+def datos():
+    data = request.get_json()
+    username=data.get('username')
 
+    usuario = mongo.db.users.find_one({"username": username},{"password":0})
+
+    if usuario:
+        usuario["_id"]=str(usuario["_id"])
+        return jsonify({"msg": "Usuario encontrado", "Usuario": usuario}), 200
+    else:
+        return jsonify({"msg":"Usuario no encontrado"}), 404
 
 # En Python, cada archivo tiene una variable especial llamada __name__.
 # Si el archivo se está ejecutando directamente (no importado como un módulo en otro archivo), 
