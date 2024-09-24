@@ -199,7 +199,38 @@ def user_games():
         return jsonify({"msg": "Usuario no encontrado"}), 404
 
 
+#Ruta para poder buscar juegos de una plataforma
+@app.route('/search_by_platform', methods=['POST'])
+@jwt_required()
+def search_by_platform():
+    data = request.get_json()
+    platform = data.get('platform')
 
+    # Convertir la plataforma en minúsculas para hacer la búsqueda insensible a mayúsculas/minúsculas
+    platform_lower = platform.lower()
+
+    # Buscar juegos donde la plataforma coincida, sin importar mayúsculas/minúsculas
+    games = mongo.db.games.find({"platform": {"$regex": platform_lower, "$options": "i"}})
+
+    # Lista para almacenar los juegos encontrados
+    games_list = []
+    
+    for game in games:
+        # Obtener el usuario que subió el juego
+        user = mongo.db.users.find_one({"_id": ObjectId(game["user_id"])})
+        if user:
+            games_list.append({
+                "_id": str(game["_id"]),
+                "gamename": game["gamename"],
+                "platform": game["platform"],
+                "price": game["price"],
+                "user": user["username"]
+            })
+
+    if games_list:
+        return jsonify({"msg": f"Juegos encontrados para la plataforma {platform}", "games": games_list}), 200
+    else:
+        return jsonify({"msg": "No se encontraron juegos para esa plataforma"}), 404
 
     
 #Ruta para hacer el login
