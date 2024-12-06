@@ -252,7 +252,6 @@ def login():
 
 
 
-#Codigo Para que te salga feed como instagram
 @app.route('/my_feed', methods=['GET'])
 @jwt_required()
 def my_feed():
@@ -279,7 +278,7 @@ def my_feed():
         user_id = random.choice(list(user_games.keys()))
         game = user_games[user_id].pop(0)
 
-        # Obtener el nombre del usuario que subió el juego
+        # Obtener el email del usuario que subió el juego
         user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
         
         if user:
@@ -288,7 +287,7 @@ def my_feed():
                 "gamename": game["gamename"],
                 "platform": game["platform"],
                 "price": game["price"],
-                "email": user["email"]  # Nombre del usuario
+                "email": user.get("email", "Email no disponible")  # Email del usuario
             })
 
         # Si el usuario ya no tiene más juegos, eliminarlo del diccionario
@@ -299,6 +298,7 @@ def my_feed():
         return jsonify({"msg": "Juegos encontrados", "feed": feed}), 200
     else:
         return jsonify({"msg": "No se encontraron juegos en el feed"}), 404
+
     
 
 
