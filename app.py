@@ -16,7 +16,7 @@ import random
 #Inicializamos la aplicación y usamos el config file
 app = Flask(__name__)
 app.config.from_object(Config)
-
+    
 #Inicializamos a bcrypt y jwt
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
@@ -200,7 +200,7 @@ def user_games():
 
 
 #Ruta para poder buscar juegos de una plataforma
-@app.route('/search_by_platform', methods=['POST'])
+@app.route('/search _by_platform', methods=['POST'])
 @jwt_required()
 def search_by_platform():
     data = request.get_json()
@@ -288,7 +288,7 @@ def my_feed():
                 "gamename": game["gamename"],
                 "platform": game["platform"],
                 "price": game["price"],
-                "user": user["username"]  # Nombre del usuario
+                "email": user["email"]  # Nombre del usuario
             })
 
         # Si el usuario ya no tiene más juegos, eliminarlo del diccionario
